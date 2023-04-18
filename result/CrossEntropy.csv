@@ -1,0 +1,2 @@
+exp_loss_type,recall@20,mrr
+CrossEntropy,0.00879,0.0018400000408291817

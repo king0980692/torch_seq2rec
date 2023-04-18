@@ -1,9 +1,15 @@
 # torch seq2rec
+# gru4rec
+
+```bash
+./run_gru4rec.sh
+```
+
 
 ## Prerequisite
 
 ```bash
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 ## Preprocess
@@ -18,8 +24,3 @@ pip install -r requirement.txt
 * using its model to train
 * eval the result
 
-## SRGNN
-
-* using the processed data previously in `exp` folder
-* using its model to train
-* eval the result
