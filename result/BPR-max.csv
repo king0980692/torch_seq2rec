@@ -1,2 +1,2 @@
 exp_loss_type,recall@20,mrr
-BPR-max,0.02264,0.005249999929219484
+BPR-max,0.07656,0.01531

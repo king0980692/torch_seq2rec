@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--remove_items', default=4, type=int)
 args = parser.parse_args()
 
-ori_data_path = './data/diginetica/diginetica.csv'
+ori_data_path = './data/diginetica/train-item-views.csv'
 train_data_path = './exp/preprocessed_data/train.csv'
 valid_data_path = './exp/preprocessed_data/valid.csv'
 test_data_path = './exp/preprocessed_data/test.csv'
@@ -29,8 +29,12 @@ def removeUnpopularItems(data, num):
     return data
 
 # read data and convert the timestamp
-ori_data = pd.read_csv(ori_data_path, sep=',')
-ori_data['Time'] = ori_data['Time'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d').timestamp())
+ori_data = pd.read_csv(ori_data_path, sep=';')
+ori_data.columns = ['SessionID', 'no', 'ItemID', 'timeframe', 'date']
+ori_data['date'] = ori_data['date'].apply(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d').timestamp())
+ori_data['Time'] = ori_data['timeframe'] + ori_data['date']
+ori_data = ori_data[['SessionID', 'ItemID', 'Time']]
+ori_data = ori_data.sort_values(['SessionID', 'Time'], ascending=True)
 
 # remove unpopular items
 ori_data = removeUnpopularItems(ori_data, args.remove_items)

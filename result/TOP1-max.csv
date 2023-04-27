@@ -1,2 +1,2 @@
 exp_loss_type,recall@20,mrr
-TOP1-max,0.06907,0.014990000054240227
+TOP1-max,0.16382,0.03425
