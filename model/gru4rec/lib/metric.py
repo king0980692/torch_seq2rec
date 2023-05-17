@@ -28,14 +28,26 @@ def get_mrr(indices, targets): #Mean Receiprocal Rank --> Average of rank of nex
     Returns:
         mrr (float): the mrr score
     """
-    tmp = targets.view(-1, 1)
-    targets = tmp.expand_as(indices)
+    targets = targets.view(-1, 1).expand_as(indices)
     hits = (targets == indices).nonzero()
     ranks = hits[:, -1] + 1
     ranks = ranks.float()
     rranks = torch.reciprocal(ranks)
     mrr = torch.sum(rranks).data / targets.size(0)
     return mrr
+
+
+def get_ndcg(indices, targets):
+    targets = targets.view(-1, 1).expand_as(indices)
+    hits = (targets == indices).nonzero()
+    ranks = hits[:, -1] + 1
+    ranks = ranks.float()
+    # print("ranks: ", ranks)
+    ndcgs = 1 / torch.log2(ranks+1) / 1
+    # print("ndcgs: ", ndcgs)
+    ndcg = torch.sum(ndcgs).data / targets.size(0)
+    # print("ndcg: ", ndcg)
+    return ndcg
 
 
 def evaluate(indices, targets, k=20):
@@ -53,4 +65,5 @@ def evaluate(indices, targets, k=20):
     _, indices = torch.topk(indices, k, -1)
     recall = get_recall(indices, targets)
     mrr = get_mrr(indices, targets)
-    return recall, mrr
+    ndcg = get_ndcg(indices, targets)
+    return recall, mrr, ndcg

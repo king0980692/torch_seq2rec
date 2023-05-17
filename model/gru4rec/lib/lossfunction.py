@@ -104,7 +104,7 @@ class TOP1_max(nn.Module):
 
 
 class CL(nn.Module):
-    def __init__(self, margin=0.4):
+    def __init__(self, margin=0.6):
         super(CL, self).__init__()
         self.margin = margin
 

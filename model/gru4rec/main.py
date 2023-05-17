@@ -32,21 +32,15 @@ parser.add_argument("--embedding_dim", type=int, default=-1, help="using embeddi
 parser.add_argument('--loss_type', default='TOP1-max', type=str) #type of loss function TOP1 / BPR / TOP1-max / BPR-max
 # etc
 parser.add_argument('--time_sort', default=False, type=bool) #In case items are not sorted by time stamp
-parser.add_argument('--model_name', default='GRU4REC-CrossEntropy', type=str)
+parser.add_argument('--model_name', default='GRU4REC', type=str)
 parser.add_argument('--save_dir', default='models', type=str)
-# parser.add_argument('--data_folder', default='../Dataset/RecSys_Dataset_After/', type=str)
-parser.add_argument('--data_folder', default='./exp/preprocessed_data/', type=str)
-parser.add_argument('--result_dir', default='./result/', type=str)
-# parser.add_argument('--data_folder', default='.', type=str)
-# parser.add_argument('--train_data', default='recSys15TrainOnly.txt', type=str)
-# parser.add_argument('--valid_data', default='recSys15Valid.txt', type=str)
+parser.add_argument('--data_folder', default='../exp/diginetica/', type=str)
+parser.add_argument('--result_dir', default='../result/diginetica/', type=str)
 parser.add_argument('--train_data', default='train.csv', type=str)
-parser.add_argument('--valid_data', default='valid.csv', type=str)
-# parser.add_argument('--train_data', default='new_diginetica_1000.csv', type=str)
-# parser.add_argument('--valid_data', default='new_diginetica_1000.csv', type=str)
+parser.add_argument('--valid_data', default='test.csv', type=str)
 parser.add_argument("--is_eval", action='store_true') #should be used during testing and eliminated during training
 parser.add_argument('--load_model', default=None,  type=str)
-parser.add_argument('--checkpoint_dir', type=str, default='./exp/checkpoint')
+parser.add_argument('--checkpoint_dir', type=str, default='../exp/checkpoint')
 
 # Get the arguments
 args = parser.parse_args()
@@ -54,7 +48,6 @@ args.cuda = torch.cuda.is_available()
 #use random seed defined
 np.random.seed(args.seed)
 torch.manual_seed(args.seed)
-
 
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
@@ -147,8 +140,8 @@ def main():
             model = checkpoint["model"]
             model.gru.flatten_parameters()
             evaluation = lib.Evaluation(model, loss_function, use_cuda=args.cuda, k = args.k_eval)
-            loss, recall, mrr = evaluation.eval(valid_data, batch_size)
-            print("Final result: recall = {:.2f}, mrr = {:.2f}".format(recall, mrr))
+            loss, recall, mrr, ndcg = evaluation.eval(valid_data, batch_size)
+            print("Final result: recall = {:.2f}, mrr = {:.2f}, ndcg = {:.2f}".format(recall, mrr, ndcg))
         else:
             print("No Pretrained Model was found!")
 

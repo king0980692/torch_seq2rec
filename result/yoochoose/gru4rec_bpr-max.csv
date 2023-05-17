@@ -1,0 +1,2 @@
+model_name,recall@20,mrr@20,ndcg@20
+gru4rec_bpr-max,0.38278,0.11719000339508057,0.17605000734329224
