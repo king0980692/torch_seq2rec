@@ -2,7 +2,7 @@
 
 ## Data & Preprocess
 
-### diginetica
+#### diginetica
 
 * Data Download
   1. download the `dataset-train-diginetica.zip` from [link](https://drive.google.com/drive/folders/0B7XZSACQf0KdXzZFS21DblRxQ3c?resourcekey=0-3k4O5YlwnZf0cNeTZ5Y_Uw)
@@ -11,8 +11,9 @@
 * Preprocess
   1. remove items with item_counts<=4
   2. remove ssessions with session_length=1
+  3. use last week as testing data
 
-### yoochoose
+#### yoochoose(1/4)
 
 * Data Download
 ```bash
@@ -24,7 +25,8 @@ wget https://s3-eu-west-1.amazonaws.com/yc-rdata/yoochoose-data.7z
 * Preprocess
   1. remove items with item_counts<=4
   2. remove ssessions with session_length=1
-
+  3. sort sessions by timestamp and only keep last 1/4 sessions
+  4. use last day as testing data
 
 ## GRU4REC
 
