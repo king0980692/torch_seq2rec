@@ -1,3 +1,5 @@
 .gitignore
-./exp/checkppoint/*
+./data/*
+./exp/*
+./model/gru4rec/lib/__pycache__/
 
