@@ -35,6 +35,7 @@ class Evaluation(object):
                 ndcgs.append(ndcg)
         mean_losses = np.mean(losses)
         mean_recall = np.mean(recalls)
+        # mean_recall = torch.mean(torch.stack(recalls)).cpu().numpy()
         mean_mrr = torch.mean(torch.stack(mrrs)).cpu().numpy()
         mean_ndcg = torch.mean(torch.stack(ndcgs)).cpu().numpy()
         # print("ndcgs: ", ndcgs)

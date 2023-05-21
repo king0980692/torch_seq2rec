@@ -1,4 +1,10 @@
 import torch
+# from torchmetrics import RetrievalRecall
+# from torchmetrics import RetrievalMRR
+# from torchmetrics import RetrievalNormalizedDCG
+# from torchmetrics.functional import retrieval_recall
+# from torchmetrics.functional import retrieval_reciprocal_rank
+# from torchmetrics.functional import retrieval_normalized_dcg
 
 
 def get_recall(indices, targets): #recall --> wether next item in session is within top K=20 recommended items or not
@@ -42,11 +48,8 @@ def get_ndcg(indices, targets):
     hits = (targets == indices).nonzero()
     ranks = hits[:, -1] + 1
     ranks = ranks.float()
-    # print("ranks: ", ranks)
     ndcgs = 1 / torch.log2(ranks+1) / 1
-    # print("ndcgs: ", ndcgs)
     ndcg = torch.sum(ndcgs).data / targets.size(0)
-    # print("ndcg: ", ndcg)
     return ndcg
 
 
@@ -62,8 +65,24 @@ def evaluate(indices, targets, k=20):
         recall (float): the recall score
         mrr (float): the mrr score
     """
-    _, indices = torch.topk(indices, k, -1)
+    # print("INDICES: ", indices.shape)
+    # print("TARGETS: ", targets.shape)
+    logits, indices = torch.topk(indices, k, -1)
+    # print("topk_(logits): )", _.shape, _)
+    # print("topkINDICES: ", indices.shape, indices)
+
     recall = get_recall(indices, targets)
     mrr = get_mrr(indices, targets)
     ndcg = get_ndcg(indices, targets)
+
+    # # fast
+    # targets = targets.view(-1, 1).expand_as(indices)
+    # hits = (targets == indices)
+    # indexes = torch.arange(50).repeat_interleave(indices.shape[1])
+    #
+    # # long
+    # recall = RetrievalRecall(k=k)(indices.view(-1), hits.view(-1), indexes)
+    # mrr = RetrievalMRR()(indices.view(-1), hits.view(-1), indexes)
+    # ndcg = RetrievalNormalizedDCG()(indices.view(-1), hits.view(-1), indexes)
+    # print('finish')
     return recall, mrr, ndcg

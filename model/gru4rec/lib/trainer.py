@@ -58,7 +58,8 @@ class Trainer(object):
             torch.save(checkpoint, model_name)
             print("Save model as %s" % model_name)
 
-        best_recall = round(max(recalls),5)
+        # best_recall = round(max(recalls),5)
+        best_recall = np.round(max(recalls),5)
         best_mrr = np.round(max(mrrs),5)
         best_ndcg = np.round(max(ndcgs),5)
         print('best recall@20: ', best_recall, 'best mrr@20: ', best_mrr, 'best ndcg@20: ', best_ndcg)
