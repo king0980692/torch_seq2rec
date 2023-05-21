@@ -5,6 +5,7 @@ import random
 import numpy as np
 from collections import defaultdict
 from multiprocessing import Process, Queue
+from sklearn.metrics import ndcg_score, recall_score, average_precision_score, precision_score
 
 # sampler for batch generation
 def random_neq(l, r, s):
@@ -47,7 +48,7 @@ def sample_function(user_train, usernum, itemnum, batch_size, maxlen, result_que
 
 
 class WarpSampler(object):
-    def __init__(self, User, usernum, itemnum, batch_size=64, maxlen=10, n_workers=1):
+    def __init__(self, User, usernum, itemnum, batch_size=64, maxlen=20, n_workers=1):
         self.result_queue = Queue(maxsize=n_workers * 10)
         self.processors = []
         for i in range(n_workers):
@@ -81,7 +82,7 @@ def data_partition(fname):
     user_valid = {}
     user_test = {}
     # assume user/item index starting from 1
-    f = open('data/%s.txt' % fname, 'r')
+    f = open('../data/%s.txt' % fname, 'r')
     for line in f:
         u, i = line.rstrip().split(' ')
         u = int(u)
@@ -106,11 +107,12 @@ def data_partition(fname):
 
 # TODO: merge evaluate functions for test and val set
 # evaluate on test set
-def evaluate_NDCG(model, dataset, args):
+def evaluate(model, dataset, args):
     [train, valid, test, usernum, itemnum] = copy.deepcopy(dataset)
 
     NDCG = 0.0
     HT = 0.0
+    MRR = 0.0
     valid_user = 0.0
 
     if usernum>10000:
@@ -147,97 +149,110 @@ def evaluate_NDCG(model, dataset, args):
         if rank < 10:
             NDCG += 1 / np.log2(rank + 2)
             HT += 1
-        if valid_user % 100 == 0:
-            print('.', end="")
-            sys.stdout.flush()
-
-    return NDCG / valid_user, HT / valid_user
-
-
-def evaluate(model, dataset, args):
-    [train, valid, test, usernum, itemnum] = copy.deepcopy(dataset)
-
-    NDCG = 0.0
-    HT = 0.0
-    MAP = 0.0
-    recall_10 = 0.0
-    valid_user = 0.0
-
-    if usernum > 10000:
-        users = random.sample(range(1, usernum + 1), 10000)
-    else:
-        users = range(1, usernum + 1)
-    for u in users:
-
-        if len(train[u]) < 1 or len(test[u]) < 1: continue
-
-        seq = np.zeros([args.maxlen], dtype=np.int32)
-        idx = args.maxlen - 1
-        seq[idx] = valid[u][0]
-        idx -= 1
-        for i in reversed(train[u]):
-            seq[idx] = i
-            idx -= 1
-            if idx == -1: break
-        rated = set(train[u])
-        rated.add(0)
-        item_idx = [test[u][0]]
-        for _ in range(100):
-            t = np.random.randint(1, itemnum + 1)
-            while t in rated: t = np.random.randint(1, itemnum + 1)
-            item_idx.append(t)
-
-        predictions = -model.predict(*[np.array(l) for l in [[u], [seq], item_idx]])
-        predictions = predictions[0]  # - for 1st argsort DESC
-
-        rank = predictions.argsort().argsort()[0].item()
-
-        valid_user += 1
-
-        # calculate NDCG
-        if rank < 10:
-            NDCG += 1 / np.log2(rank + 2)
-            HT += 1
-
-        # calculate MAP
-        ap = 0.0
-        hit = 0.0
-        for i in range(len(predictions)):
-            if item_idx[i] in test[u]:
-                hit += 1
-                ap += hit / (i + 1)
-        if hit > 0:
-            ap /= hit
-        MAP += ap
-
-        # calculate Recall@10
-        hits = [1 if item_idx[i] in test[u] else 0 for i in range(10)]
-        recall_10 += sum(hits) / min(len(test[u]), 10)
+            MRR += 1 / (rank + 1)
 
         if valid_user % 100 == 0:
-            print('.', end="")
+            print('.',end='')
             sys.stdout.flush()
 
-    NDCG /= valid_user
-    HT /= valid_user
-    MAP /= valid_user
-    recall_10 /= valid_user
+    return NDCG / valid_user, HT / valid_user ,MRR / valid_user
+#
 
-    return MAP, recall_10
+# def evaluate(model, dataset, args):
+#     [train, valid, test, usernum, itemnum] = copy.deepcopy(dataset)
+#
+#     NDCG = 0.0
+#     Recall = 0.0
+#     MAP = 0.0
+#     valid_user = 0.0
+#
+#     if usernum > 1000000:
+#         users = random.sample(range(1, usernum + 1), 1000000)
+#     else:
+#         users = range(1, usernum + 1)
+#
+#     for u in users:
+#         if len(train[u]) < 1 or len(test[u]) < 1:
+#             continue
+#
+#         seq = np.zeros([args.maxlen], dtype=np.int32)
+#         idx = args.maxlen - 1
+#         seq[idx] = valid[u][0]
+#         idx -= 1
+#
+#         for i in reversed(train[u]):
+#             seq[idx] = i
+#             idx -= 1
+#             if idx == -1:
+#                 break
+#
+#         rated = set(train[u])
+#         rated.add(0)
+#         item_idx = [test[u][0]]
+#
+#         for _ in range(100):
+#             t = np.random.randint(1, itemnum + 1)
+#             while t in rated:
+#                 t = np.random.randint(1, itemnum + 1)
+#             item_idx.append(t)
+#
+#         predictions = -model.predict(*[np.array(l) for l in [[u], [seq], item_idx]])
+#         # predictions = predictions[0]  # - for 1st argsort DESC
+#         predictions = predictions[0].detach().numpy()
+#
+#
+#         ground_truth = np.zeros(len(predictions))
+#         ground_truth[0] = 1
+#
+#         # NDCG
+#         ndcg = ndcg_score([ground_truth], [predictions], k=10)
+#         NDCG += ndcg
+#         print('NDCG done ')
+#         # Recall
+#         binary_predictions = np.zeros(len(predictions))
+#         binary_predictions[predictions.argsort()[:10]] = 1
+#         recall = recall_score([ground_truth], [binary_predictions], average='macro')
+#         if recall.size > 1:
+#             recall = recall.mean()
+#         else:
+#             recall = 0.0
+#         Recall += recall
+#
+#         # #Precision
+#         # binary_predictions = np.zeros(len(predictions))
+#         # binary_predictions[predictions.argsort()[:10]] = 1
+#         # precision = precision_score([ground_truth], [binary_predictions], average=None)
+#         # if precision.size > 1:
+#         #     # 如果存在多個類別的 Precision，則使用平均值
+#         #     precision = precision.mean()
+#         # else:
+#         #     # 如果只有單個類別的 Precision，則自行處理
+#         #     precision = 0.0  # 或者其他適當的處理方式
+#         # Precision += precision
+#
+#         # MAP
+#         ground_truth_map = np.zeros(len(predictions))
+#         ground_truth_map[0] = 1
+#         binary_predictions_map = np.zeros(len(predictions))
+#         binary_predictions_map[predictions.argsort()[::-1]] = 1
+#         average_precision = average_precision_score([ground_truth_map], [binary_predictions_map])
+#         MAP += average_precision
+#         valid_user += 1
+#
+#         if valid_user % 100 == 0:
+#             print('.', end="")
+#             sys.stdout.flush()
+#
+#     return NDCG / valid_user, Recall / valid_user, MAP / valid_user
 
 
 # evaluate on val set
 def evaluate_valid(model, dataset, args):
     [train, valid, test, usernum, itemnum] = copy.deepcopy(dataset)
 
-    # NDCG = 0.0
-    # valid_user = 0.0
-    # HT = 0.0
-    AP = 0.0
-    Recall = 0.0
+    NDCG = 0.0
     valid_user = 0.0
-
-
+    HT = 0.0
     if usernum>10000:
         users = random.sample(range(1, usernum + 1), 10000)
     else:
@@ -263,35 +278,15 @@ def evaluate_valid(model, dataset, args):
         predictions = -model.predict(*[np.array(l) for l in [[u], [seq], item_idx]])
         predictions = predictions[0]
 
-    #     rank = predictions.argsort().argsort()[0].item()
-    #
-    #     valid_user += 1
-    #
-    #     if rank < 10:
-    #         NDCG += 1 / np.log2(rank + 2)
-    #         HT += 1
-    #     if valid_user % 100 == 0:
-    #         print('.', end="")
-    #         sys.stdout.flush()
-    #
-    # return NDCG / valid_user, HT / valid_user
-        sorted_idx = predictions.argsort()[::-1]
-        top_k = sorted_idx[:10]
-
-        num_hits = 0
-        for i in top_k:
-            if i == 0:
-                continue
-            if i in test[u]:
-                num_hits += 1
-
-        AP += num_hits / 10.0
-        Recall += num_hits / float(len(test[u]))
+        rank = predictions.argsort().argsort()[0].item()
 
         valid_user += 1
 
+        if rank < 10:
+            NDCG += 1 / np.log2(rank + 2)
+            HT += 1
         if valid_user % 100 == 0:
             print('.', end="")
             sys.stdout.flush()
 
-    return AP / valid_user, Recall / valid_user
+    return NDCG / valid_user, HT / valid_user
