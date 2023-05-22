@@ -10,3 +10,4 @@ tqdm
 time
 torch_geometric
 torch_sparse
+torchmetrics
