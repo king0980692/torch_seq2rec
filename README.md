@@ -28,7 +28,8 @@ You can add the suffix `--nonhybrid` to use the global preference of a session g
 
 You can also change other parameters according to the usage:
 if your dataset is from `yoochoose`
-```python3 main.py  --dataset=yoochoose
+```
+python3 main.py  --dataset=yoochoose
 ```
 ```
 optional arguments:
