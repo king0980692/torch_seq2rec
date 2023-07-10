@@ -35,7 +35,7 @@ wget https://s3-eu-west-1.amazonaws.com/yc-rdata/yoochoose-data.7z
 ## GRU4REC
 
 
-## Implementation
+### Implementation
 ```bash
 pip install -r model/gru4rec/requirements.txt
 cd scripts
@@ -55,7 +55,7 @@ This script will do
 Original code from [here](https://github.com/userbehavioranalysis/SR-GNN_PyTorch-Geometric). 
 Original [paper](https://arxiv.org/abs/1811.00855).
 
-## preprocessing
+### preprocessing
 ```python
 python ./model/SRGNN/preprocess.py
 ```
@@ -65,6 +65,10 @@ python ./model/SRGNN/preprocess.py
 pip install -r ./model/SRGNN/requirement.txt 
 ./script/run_SRGNN_[dataset_name].sh 
 ```
+
+
+
+
 ## sasRec
 
 ### Paper 
@@ -72,7 +76,7 @@ pip install -r ./model/SRGNN/requirement.txt
 [Wang-Cheng Kang](http://kwc-oliver.com), [Julian McAuley](http://cseweb.ucsd.edu/~jmcauley/) (2018). [Self-Attentive Sequential Recommendation.](https://cseweb.ucsd.edu/~jmcauley/pdfs/icdm18.pdf) In Proceedings of IEEE International Conference on Data Mining (ICDM'18)
 
 
-## Implementation
+### Implementation
 
 ```bash
 cd script
@@ -80,7 +84,7 @@ cd script
 ```
 
 
-## Preprocess
+### Preprocess
 
 - Data Dowmload into data folder 
 - You need to run the file  model/sasRec/DataProcess.py first to preprocess the data.
@@ -89,7 +93,7 @@ cd script
  python3 ./model/sasRec/DataProcessing.py --dataset=yoochoose
 ```
 
-## Run model
+### Run model
 
 -you can run the file main.py or  to train the model.
 For example: 
