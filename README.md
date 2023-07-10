@@ -1,10 +1,20 @@
-# torch seq2rec
+# SRGNN
 
 Original code from [here](https://github.com/userbehavioranalysis/SR-GNN_PyTorch-Geometric). 
 Original [paper](https://arxiv.org/abs/1811.00855).
 
+## diginetica
+```
+ ./script/run_SRGNN_diginetica.sh
+```
+## yoochoose
+```
+./script/run_SRGNN_yoochoose1_4.sh 
+./script/run_SRGNN_yoochoose1_64.sh
+```
+### python 
 ```python=
-python3 ./src/main.py 
+python ./model/main.py
 ```
 * ```--dataset ``` : dataset  name , default= 'diginetica'
 * ```--batch_size``` : input batch size , default=100
@@ -20,17 +30,4 @@ python3 ./src/main.py
 ```bash
 pip install -r requirement.txt
 ```
-
-## Preprocess
-
-* including download dataset into `data` folder
-* do some trick here to filter the data
-* finallly, maybe execute a python script to dump the processed data into `exp` folder
-
-
-## SRGNN
-
-* using the processed data previously in `exp` folder
-* using its model to train
-* eval the result
 

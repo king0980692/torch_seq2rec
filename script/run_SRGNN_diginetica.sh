@@ -1,1 +1,1 @@
-python ../model/main.py -- dataset diginetica 
+python ../model/main.py --dataset diginetica 

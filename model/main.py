@@ -14,7 +14,7 @@ from model import *
 from train import forward
 from torchmetrics import RetrievalRecall
 from tensorboardX import SummaryWriter
-
+import csv
 
 # Logger configuration
 logging.basicConfig(level=logging.DEBUG,
@@ -72,7 +72,15 @@ def main():
         scheduler.step()
         forward(model, train_loader, device, writer, epoch, top_k=opt.top_k, optimizer=optimizer, train_flag=True)
         with torch.no_grad():
-            forward(model, test_loader, device, writer, epoch, top_k=opt.top_k, train_flag=False)
+            result=forward(model, test_loader, device, writer, epoch, top_k=opt.top_k, train_flag=False)
+            with open('../result/SRGNN_'+opt.dataset+'_result.csv') as file:
+                writer=csv.DictWriter(file,fieldnames=['hit','MRR','ndcg'])
+                writer.writeheader()
+                writer = csv.writer(result)
+                
+                #for k, v in result.items():
+                #    writer.write([k, v])
+
 
 
 if __name__ == '__main__':

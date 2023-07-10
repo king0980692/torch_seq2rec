@@ -62,3 +62,4 @@ def forward(model, loader, device, writer, epoch, top_k=20, optimizer=None, trai
         print("hit " , hit)
         print("mrr" , mrr)
         print("ndcg ",ndcg)
+        return {"hit": hit,"mrr":mrr,"ndcg":ndcg}
