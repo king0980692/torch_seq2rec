@@ -45,7 +45,7 @@ def main():
     test_dataset.process()
     
     test_loader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False)
-    log_dir = cur_dir + '/log/' + str(opt.dataset) + '/' + str(opt)
+    log_dir = cur_dir + '/SRGNN_log/' + str(opt.dataset) + '/' + str(opt)
     print("\nlogDIR\n",log_dir)
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
