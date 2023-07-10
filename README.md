@@ -105,5 +105,3 @@ if your dataset is from yoochoose
 ```python
 python3 ./model/sasRec/main.py  --dataset=yoochoose
 ```
-
-
