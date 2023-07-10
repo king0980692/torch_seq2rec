@@ -26,10 +26,10 @@ opt = parser.parse_args()
 print(opt)
 dataset=''
 if opt.dataset == 'diginetica':
-    dataset ='./data/'+ opt.dataset+'/train-item-views.csv'
+    dataset ='../../data/'+ opt.dataset+'/train-item-views.csv'
 
 elif opt.dataset =='yoochoose':
-    dataset ='./data/'+ opt.dataset+'-data/yoochoose-clicks.dat'
+    dataset ='../../data/'+ opt.dataset+'-data/yoochoose-clicks.dat'
 print(dataset)
 print("-- Starting @ %ss" % datetime.datetime.now())
 with open(dataset, "r") as f:
@@ -281,19 +281,19 @@ for seq in test_seqs:
     all += len(seq)
 print('avg length: ', all/(len(train_seqs) + len(test_seqs) * 1.0))
 if opt.dataset == 'diginetica':
-    if not os.path.exists('diginetica'):
-        os.makedirs('diginetica')
-    pickle.dump(tra, open('../exp/diginetica/raw/train.txt', 'wb'))
-    pickle.dump(tes, open('../exp/diginetica/raw/test.txt', 'wb'))
-    pickle.dump(train_seqs, open('../exp/diginetica/raw/all_train_seq.txt', 'wb'))
+    if not os.path.exists('../../exp/SRGNN_diginetica'):
+        os.makedirs('../../exp/SRGNN_diginetica')
+    pickle.dump(tra, open('../../exp/SRGNN_diginetica/raw/train.txt', 'wb'))
+    pickle.dump(tes, open('../../exp/SRGNN_diginetica/raw/test.txt', 'wb'))
+    pickle.dump(train_seqs, open('../../exp/SRGNN_diginetica/raw/all_train_seq.txt', 'wb'))
 
 elif opt.dataset == 'yoochoose':
-    if not os.path.exists('yoochoose1_4'):
-        os.makedirs('yoochoose1_4')
-    if not os.path.exists('yoochoose1_64'):
-        os.makedirs('yoochoose1_64')
-    pickle.dump(tes, open('../exp/yoochoose1_4/raw/test.txt', 'wb'))
-    pickle.dump(tes, open('../exp/yoochoose1_64/raw/test.txt', 'wb'))
+    if not os.path.exists('../../exp/SRGNN_yoochoose1_4'):
+        os.makedirs('../../exp/SRGNN_yoochoose1_4')
+    if not os.path.exists('../../exp/yoochoose1_64'):
+        os.makedirs('../../exp/yoochoose1_64')
+    pickle.dump(tes, open('../../exp/yoochoose1_4/raw/test.txt', 'wb'))
+    pickle.dump(tes, open('../../exp/yoochoose1_64/raw/test.txt', 'wb'))
 
     split4, split64 = int(len(train_seqs) / 4), int(len(train_seqs) / 64)
     print(len(train_seqs[-split4:]))
@@ -302,18 +302,18 @@ elif opt.dataset == 'yoochoose':
     tra4, tra64 = (train_seqs[-split4:], train_labs[-split4:]), (train_seqs[-split64:], train_labs[-split64:])
     seq4, seq64 = train_seqs[train_ids[-split4]:], train_seqs[train_ids[-split64]:]
 
-    pickle.dump(tra4, open('../exp/yoochoose1_4/raw/train.txt', 'wb'))
-    pickle.dump(seq4, open('../exp/yoochoose1_4/raw/all_train_seq.txt', 'wb'))
+    pickle.dump(tra4, open('../../exp/yoochoose1_4/raw/train.txt', 'wb'))
+    pickle.dump(seq4, open('../../exp/yoochoose1_4/raw/all_train_seq.txt', 'wb'))
 
-    pickle.dump(tra64, open('../exp/yoochoose1_64/raw/train.txt', 'wb'))
-    pickle.dump(seq64, open('../exp/yoochoose1_64/raw/all_train_seq.txt', 'wb'))
+    pickle.dump(tra64, open('../../exp/yoochoose1_64/raw/train.txt', 'wb'))
+    pickle.dump(seq64, open('../../exp/yoochoose1_64/raw/all_train_seq.txt', 'wb'))
 
 else:
-    if not os.path.exists('sample'):
-        os.makedirs('sample')
-    pickle.dump(tra, open('../exp/sample/train.txt', 'wb'))
-    pickle.dump(tes, open('../exp/sample/test.txt', 'wb'))
-    pickle.dump(train_seqs, open('../exp/sample/all_train_seq.txt', 'wb'))
+    if not os.path.exists('../../exp/SRGNN_sample'):
+        os.makedirs('../../exp/SRGNN_sample')
+    pickle.dump(tra, open('../../exp/SRGNN_sample/train.txt', 'wb'))
+    pickle.dump(tes, open('../../exp/SRGNN_sample/test.txt', 'wb'))
+    pickle.dump(train_seqs, open('../../exp/SRGNN_sample/all_train_seq.txt', 'wb'))
 print("final len train ",len(tra[0]))
 
 

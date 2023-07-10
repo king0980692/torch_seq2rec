@@ -1,1 +1,1 @@
-python ../model/main.py --dataset yoochoose1_64
+python ../model/SRGNN/main.py --dataset yoochoose1_64
